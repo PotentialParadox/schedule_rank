@@ -19,7 +19,7 @@ struct Resident {
 }
 
 impl Resident {
-    fn from_record(r: StringRecord) -> Self {
+    fn from_record(r: &StringRecord) -> Self {
         let mut rank_list: Vec<u8> = Vec::new();
         let id = r.get(0).unwrap().parse::<u8>().unwrap();
         for i in 1..r.len() {
@@ -35,12 +35,14 @@ impl Resident {
 pub fn read_csv() -> Result<(), Box<dyn Error>> {
     // Build the CSV reader and iterate over each record.
     let mut rdr = csv::Reader::from_reader(io::stdin());
+    let mut residents: Vec<Resident> = Vec::new();
     for result in rdr.records() {
         // The iterator yields Result<StringRecord, Error>, so we check the
         // error here.
         let record = result?;
-        println!("{:?}", record);
+        residents.push(Resident::from_record(&record));
     }
+    println!("{:?}", residents);
     Ok(())
 }
 
@@ -52,7 +54,7 @@ mod tests {
     #[test]
     fn test_record_to_resident() {
         let r = StringRecord::from(vec!["1", "10", "4"]);
-        let r1 = Resident::from_record(r);
+        let r1 = Resident::from_record(&r);
         assert_eq!(r1, Resident {
             id: 1,
             rank_list: vec![10, 4]
