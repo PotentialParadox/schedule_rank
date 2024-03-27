@@ -12,6 +12,11 @@ To use Schedule Rank, follow these steps:
 
 results will be in `file_ranked.csv`
 
+## Dependencies
+MacOS or Linux
+
+Rust
+
 ## Installation
 To install Schedule Rank, follow these steps:
 
