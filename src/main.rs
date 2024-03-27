@@ -1,7 +1,9 @@
 mod rank;
 
 fn main() {
-    let results = rank::read_csv().unwrap();
-    println!("{:?}", results);
-    println!("Hello, world!");
+    let mut residents = rank::read_csv().unwrap();
+    rank::optimize(&mut residents);
+    rank::assign_tracks(&mut residents);
+    rank::print_residents(&mut residents);
 }
+ 
