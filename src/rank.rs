@@ -23,7 +23,8 @@ impl Resident {
     fn from_record(r: &StringRecord) -> Self {
         let mut rank_list: Vec<i32> = Vec::new();
         let id = r.get(0).unwrap().parse::<i32>().unwrap();
-        for i in 1..r.len() {
+        // index 1 is the submission time
+        for i in 2..r.len() {
             rank_list.push(r[i].to_string().parse::<i32>().unwrap());
         }
         Self {
@@ -110,10 +111,10 @@ fn sort_residents_by_id(residents: &mut Vec<Resident>) {
 
 pub fn print_residents(residents: &mut Vec<Resident>) {
     sort_residents_by_id(residents);
-    println!("id, track, track_position");
+    println!("track, track_position");
     for r in residents {
         let track_position = get_track_position_on_rank_list(r.track.unwrap(), &r.rank_list);
-        println!("{:?},{:?},{:?}", r.id, r.track.unwrap(), track_position);
+        println!("{:?},{:?}", r.track.unwrap(), track_position);
     }
 }
 
@@ -128,9 +129,9 @@ mod tests {
         // Create a list of residents
         // Sort the list by id
         // The list should be sorted by id
-        let r = StringRecord::from(vec!["2", "1", "2", "3"]);
+        let r = StringRecord::from(vec!["2", "x", "1", "2", "3"]);
         let r1 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["1", "2", "1", "3"]);
+        let r = StringRecord::from(vec!["1", "x", "2", "1", "3"]);
         let r2 = Resident::from_record(&r);
         let mut residents = vec![r1, r2];
         sort_residents_by_id(&mut residents);
@@ -143,9 +144,9 @@ mod tests {
         // Create a list of residents
         // Assign tracks to the residents
         // The tracks should be assigned in order
-        let r = StringRecord::from(vec!["1", "1", "2"]);
+        let r = StringRecord::from(vec!["1", "x", "1", "2"]);
         let r1 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["2", "2", "1"]);
+        let r = StringRecord::from(vec!["2", "x", "2", "1"]);
         let r2 = Resident::from_record(&r);
         let mut residents = vec![r1, r2];
         assign_tracks(&mut residents);
@@ -161,11 +162,11 @@ mod tests {
         // We have a tie for first in this one
         // Resident 1 really doesn't want the second track, so
         // the list should be [2, 1, 3]
-        let r = StringRecord::from(vec!["1", "1", "3", "2"]);
+        let r = StringRecord::from(vec!["1", "x", "1", "3", "2"]);
         let r1 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["2", "1", "2", "3"]);
+        let r = StringRecord::from(vec!["2", "x", "1", "2", "3"]);
         let r2 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["3", "3", "1", "2"]);
+        let r = StringRecord::from(vec!["3", "x", "3", "1", "2"]);
         let r3 = Resident::from_record(&r);
         let mut residents = vec![r1, r2, r3];
         optimize(&mut residents);
@@ -179,11 +180,11 @@ mod tests {
         // Create a list of residents
         // Optimize the list
         // The list should be sorted by rank
-        let r = StringRecord::from(vec!["1", "2", "1", "3"]);
+        let r = StringRecord::from(vec!["1", "x", "2", "1", "3"]);
         let r1 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["2", "1", "2", "3"]);
+        let r = StringRecord::from(vec!["2", "x", "1", "2", "3"]);
         let r2 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["3", "3", "1", "2"]);
+        let r = StringRecord::from(vec!["3", "x", "3", "1", "2"]);
         let r3 = Resident::from_record(&r);
         let mut residents = vec![r1, r2, r3];
         optimize(&mut residents);
@@ -215,7 +216,7 @@ mod tests {
 
     #[test]
     fn test_record_to_resident() {
-        let r = StringRecord::from(vec!["1", "1", "2"]);
+        let r = StringRecord::from(vec!["1", "x", "1", "2"]);
         let r1 = Resident::from_record(&r);
         assert_eq!(r1, Resident {
             id: 1,
@@ -228,7 +229,7 @@ mod tests {
     fn test_ojective() {
         // Note the best match will have a value of 0
         // The second best match will have a value of 1, then 4, 9, 16, 25, 36, 49, 64, 81, 100
-        let r = StringRecord::from(vec!["1", "2", "1", "3"]);
+        let r = StringRecord::from(vec!["1", "x", "2", "1", "3"]);
         let r1 = Resident::from_record(&r);
         assert_eq!(r1.score(0), 1);
         assert_eq!(r1.score(1), 0);
@@ -239,9 +240,9 @@ mod tests {
     fn test_swap() {
         // Create a list of residents
         // Swap the first two residents
-        let r = StringRecord::from(vec!["1", "2", "1", "3"]);
+        let r = StringRecord::from(vec!["1", "x", "2", "1", "3"]);
         let r1 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["2", "1", "1", "3"]);
+        let r = StringRecord::from(vec!["2", "x", "1", "1", "3"]);
         let r2 = Resident::from_record(&r);
         let mut rs = vec![r1, r2];
         rs.swap(0, 1);
@@ -255,9 +256,9 @@ mod tests {
         // r1 would prefer to be in the second position
         // r2 would prefer to be in the first position
         // The swap should be made
-        let r = StringRecord::from(vec!["1", "2", "1", "3"]);
+        let r = StringRecord::from(vec!["1", "x", "2", "1", "3"]);
         let r1 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["2", "1", "2", "3"]);
+        let r = StringRecord::from(vec!["2", "x", "1", "2", "3"]);
         let r2 = Resident::from_record(&r);
         let mut residents = vec![r1, r2];
         let pair: (usize, usize) = (0, 1);
@@ -273,9 +274,9 @@ mod tests {
         // r1 would prefer to be in the first position
         // r2 would prefer to be in the second position
         // The swap should not be made
-        let r = StringRecord::from(vec!["1", "1", "2", "3"]);
+        let r = StringRecord::from(vec!["1", "x", "1", "2", "3"]);
         let r1 = Resident::from_record(&r);
-        let r = StringRecord::from(vec!["2", "2", "1", "3"]);
+        let r = StringRecord::from(vec!["2", "x", "2", "1", "3"]);
         let r2 = Resident::from_record(&r);
         let mut residents = vec![r1, r2];
         let pair: (usize, usize) = (0, 1);
