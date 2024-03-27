@@ -1,6 +1,7 @@
 mod rank;
 
 fn main() {
-    rank::read_csv().unwrap();
+    let results = rank::read_csv().unwrap();
+    println!("{:?}", results);
     println!("Hello, world!");
 }
